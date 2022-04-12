@@ -59,20 +59,20 @@ to load the new post-migration schema into the test database!
 We've provided [three Cucumber scenarios](http://pastebin.com/L6FYWyV7) to 
 drive creation of the happy path of Search for Movies by Director.
 The first lets you add director info to an existing movie, 
-and doesn't require creating any new views or controller actions 
+and doesn't require creating any new views or controllers actions 
 (but does require modifying existing views, and will require creating a new step definition and possibly adding a line
 or two to `features/support/paths.rb`).
 
 The second lets you click a new link on a movie details page "Find Movies With Same Director", 
 and shows all movies that share the same director as the displayed movie.  
 For this you'll have to modify the existing Show Movie view, and you'll have to add a route, 
-view and controller method for Find With Same Director.  
+view and controllers method for Find With Same Director.  
 
 The third handles the sad path, when the current movie has no director info but we try 
 to do "Find with same director" anyway.
 
 Going one Cucumber step at a time, use RSpec to create the appropriate
-controller and model specs to drive the creation of the new controller
+controllers and model specs to drive the creation of the new controllers
 and model methods.  At the least, you will need to write tests to drive
 the creation of: 
 
@@ -80,7 +80,7 @@ the creation of:
 (HINT: use the 'match' syntax for routes as suggested in "Non-Resource-Based Routes" 
 in Section 4.1 of ESaaS) 
 
-+ a controller method to receive the click
++ a controllers method to receive the click
 on "Find With Same Director", and grab the id (for example) of the movie
 that is the subject of the match (i.e. the one we're trying to find
 movies similar to) 
@@ -90,7 +90,7 @@ whose director matches that of the current movie
 
 It's up to you to
 decide whether you want to handle the sad path of "no director" in the
-controller method or in the model method, but you must provide a test
+controllers method or in the model method, but you must provide a test
 for whichever one you do. Remember to include the line 
 `require 'spec_helper'` at the top of your *_spec.rb files.
 

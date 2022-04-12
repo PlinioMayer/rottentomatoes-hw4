@@ -14,19 +14,26 @@ module NavigationHelpers
     case page_name
 
     when /^the home\s?page$/
-      '/'
+      movies_path
 
-    when /^the RottenPotatoes home page/
-      '/movies'
+    when /^the edit page for "(.*)"/
+      edit_movie_path(Movie.find_by_title($1))
 
-    when /^the Create New Movie page/
-      '/movies/new'
+    when /the details page for "(.*)"$/
+      movie_path(Movie.find_by_title($1))
 
-    # Add more mappings here.
-    # Here is an example that pulls values out of the Regexp:
-    #
-    #   when /^(.*)'s profile page$/i
-    #     user_profile_path(User.find_by_login($1))
+    when /^the Similar Movies page for "(.*)"$/
+      @movie_id = Movie.find_by_title($1)
+      movie_similar_path(@movie_id)
+
+    when /^the RottenPotatoes home page$/
+      movies_path
+
+      # Add more mappings here.
+      # Here is an example that pulls values out of the Regexp:
+      #
+      #   when /^(.*)'s profile page$/i
+      #     user_profile_path(User.find_by_login($1))
 
     else
       begin
@@ -35,7 +42,7 @@ module NavigationHelpers
         self.send(path_components.push('path').join('_').to_sym)
       rescue NoMethodError, ArgumentError
         raise "Can't find mapping from \"#{page_name}\" to a path.\n" +
-          "Now, go and add a mapping in #{__FILE__}"
+                "Now, go and add a mapping in #{__FILE__}"
       end
     end
   end

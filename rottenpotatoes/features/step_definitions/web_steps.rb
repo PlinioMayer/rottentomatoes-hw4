@@ -31,20 +31,6 @@ module WithinHelpers
 end
 World(WithinHelpers)
 
-Given /^the following movies exist:$/ do |movies_table|
-  movies_table.hashes.each do |movie|
-    # each returned element will be a hash whose key is the table header.
-    # you should arrange to add that movie to the database here.
-    Movie.create!(movie)
-  end
-end
-
-Given(/^I check all ratings$/) do
-  Movie.all_ratings.each do |rating|
-    check("ratings[#{rating}]")
-  end
-end
-
 # Single-line step scoper
 When /^(.*) within (.*[^:])$/ do |step, parent|
   with_scope(parent) { When step }
@@ -100,24 +86,12 @@ When /^(?:|I )select "([^"]*)" from "([^"]*)"$/ do |value, field|
   select(value, :from => field)
 end
 
-Given /^I check the following ratings: (.*)$/ do |field|
-    field.split(%r{,\s*}).each do |rating|
-      check("ratings_#{rating}")
-    end
+When /^(?:|I )check "([^"]*)"$/ do |field|
+  check(field)
 end
-
- Given /^I uncheck the following ratings: (.*)$/ do |field|
-      field.split(%r{,\s*}).each do |rating| 
-        uncheck("ratings_#{rating}")
-    end
- end
 
 When /^(?:|I )uncheck "([^"]*)"$/ do |field|
   uncheck(field)
-end
-
-When /^(?:|I )check "([^"]*)"$/ do |field|
-  check(field)
 end
 
 When /^(?:|I )choose "([^"]*)"$/ do |field|
@@ -136,22 +110,6 @@ Then /^(?:|I )should see "([^"]*)"$/ do |text|
   end
 end
 
-Then /^(?:|I )should see all of the movies$/ do
-  # Make sure that all the movies in the app are visible in the table
-  #flunk "Unimplemented"
-  #assert page.all('#movies tr').size - 1 == Movie.count()
-  rows = page.all('#movies tr').size - 1 
-  assert rows == Movie.count()
-end
-
-Then /^(?:|I )should not see all of the movies$/ do
-  # Make sure that all the movies in the app are visible in the table
-  #flunk "Unimplemented"
-  #assert page.all('#movies tr').size - 1 == Movie.count()
-  rows = page.all('#movies tr').size - 1 
-  assert rows == 0
-end
-
 Then /^(?:|I )should see \/([^\/]*)\/$/ do |regexp|
   regexp = Regexp.new(regexp)
 
@@ -162,20 +120,12 @@ Then /^(?:|I )should see \/([^\/]*)\/$/ do |regexp|
   end
 end
 
-Then /^(?:|I )should not see (.*)$/ do |text|
-  #if page.respond_to? :should
-  #  page.should have_no_content(text)
-  #else
+Then /^(?:|I )should not see "([^"]*)"$/ do |text|
+  if page.respond_to? :should
+    page.should have_no_content(text)
+  else
     assert page.has_no_content?(text)
-    puts " #{text} "
-  #end
-end
-
-Then /I should see "(.*)" before "(.*)"/ do |e1, e2|
-  #  ensure that that e1 occurs before e2.
-  #  page.body is the entire content of the page as a string.
-  assert page.body.index(e1) < page.body.index(e2)
-  #flunk "Unimplemented"
+  end
 end
 
 Then /^(?:|I )should not see \/([^\/]*)\/$/ do |regexp|
@@ -276,7 +226,7 @@ Then /^the "([^"]*)" checkbox(?: within (.*))? should not be checked$/ do |label
     end
   end
 end
- 
+
 Then /^(?:|I )should be on (.+)$/ do |page_name|
   current_path = URI.parse(current_url).path
   if current_path.respond_to? :should
@@ -290,8 +240,8 @@ Then /^(?:|I )should have the following query string:$/ do |expected_pairs|
   query = URI.parse(current_url).query
   actual_params = query ? CGI.parse(query) : {}
   expected_params = {}
-  expected_pairs.rows_hash.each_pair{|k,v| expected_params[k] = v.split(',')} 
-  
+  expected_pairs.rows_hash.each_pair{|k,v| expected_params[k] = v.split(',')}
+
   if actual_params.respond_to? :should
     actual_params.should == expected_params
   else
